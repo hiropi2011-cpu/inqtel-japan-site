@@ -130,14 +130,17 @@ h1,h2,h3{font-weight:700;letter-spacing:-.015em;line-height:1.12}
 /* key offer — slow, softly-faded ticker (edges dissolve, never hard-cut) */
 .hero__ticker{position:relative;flex:1 1 300px;min-width:0;max-width:min(52vw,620px);
   padding-left:clamp(16px,1.6vw,24px);overflow:hidden;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14%,#000 86%,transparent 100%);
-          mask-image:linear-gradient(90deg,transparent 0,#000 14%,#000 86%,transparent 100%)}
+  /* left edge stays sharp so the sentence starts clearly on 「御社の」; only the right edge dissolves */
+  -webkit-mask-image:linear-gradient(90deg,#000 0,#000 76%,transparent 100%);
+          mask-image:linear-gradient(90deg,#000 0,#000 76%,transparent 100%)}
 /* after 2 laps: settle, drop the edge fade so the full sentence reads clearly */
 .hero__ticker.stopped{-webkit-mask-image:none;mask-image:none}
 .hero__ticker.stopped .hero__ticker__track{animation:none;transform:translateX(-50%)}
 .hero__ticker::before{content:"";position:absolute;left:0;top:.28em;bottom:.28em;width:2.5px;border-radius:3px;z-index:2;
   background:linear-gradient(180deg,var(--green),rgba(139,195,74,.2))}
-.hero__ticker__track{display:flex;align-items:center;width:max-content;animation:tick 34s linear 2 forwards}
+/* one continuous run: 2 sentences pass at 34s each, then it stops. No mid-way reset. */
+.hero__ticker__track{display:flex;align-items:center;width:max-content;
+  animation:tick 68s linear 1.4s 1 forwards}
 .hero__ticker:hover .hero__ticker__track{animation-play-state:paused}
 .hero__ticker span{font-family:var(--menu);font-weight:500;font-size:clamp(1.18rem,1.6vw,1.4rem);
   letter-spacing:.015em;color:var(--ink);opacity:.94;white-space:nowrap}
