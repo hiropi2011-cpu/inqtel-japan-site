@@ -138,9 +138,9 @@ h1,h2,h3{font-weight:700;letter-spacing:-.015em;line-height:1.12}
 .hero__ticker.stopped .hero__ticker__track{animation:none;transform:translateX(-50%)}
 .hero__ticker::before{content:"";position:absolute;left:0;top:.28em;bottom:.28em;width:2.5px;border-radius:3px;z-index:2;
   background:linear-gradient(180deg,var(--green),rgba(139,195,74,.2))}
-/* one continuous run: 2 sentences pass at 34s each, then it stops. No mid-way reset. */
+/* one continuous run: 2 sentences pass at 20s each, then it stops. No mid-way reset. */
 .hero__ticker__track{display:flex;align-items:center;width:max-content;
-  animation:tick 68s linear 1.4s 1 forwards}
+  animation:tick 40s linear 1.4s 1 forwards}
 .hero__ticker:hover .hero__ticker__track{animation-play-state:paused}
 .hero__ticker span{font-family:var(--menu);font-weight:500;font-size:clamp(1.18rem,1.6vw,1.4rem);
   letter-spacing:.015em;color:var(--ink);opacity:.94;white-space:nowrap}
