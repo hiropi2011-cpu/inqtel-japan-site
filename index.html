@@ -359,6 +359,11 @@ h1,h2,h3{font-weight:700;letter-spacing:-.015em;line-height:1.12}
 .form .fn{text-align:center;color:var(--muted);font-size:.82rem;margin-top:18px}
 .form .ok{display:none;text-align:center;color:var(--green);margin-top:20px}
 .form .ok.show{display:block}
+.form .ng{display:none;text-align:center;color:#e2725b;margin-top:20px;font-size:.92rem}
+.form .ng.show{display:block}
+/* spam honeypot — hidden from humans, bots fill it in */
+.form input[name="_gotcha"]{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
+.form button[disabled]{opacity:.55;cursor:default}
 
 /* ============================================================ FOOTER */
 .footer{position:relative;z-index:2;border-top:1px solid var(--line);padding-block:clamp(50px,7vh,84px);overflow:hidden}
@@ -646,14 +651,21 @@ h1,h2,h3{font-weight:700;letter-spacing:-.015em;line-height:1.12}
     <div class="eyebrow reveal" style="justify-content:center"><span class="n">07</span> Contact</div>
     <h2 class="reveal d1">まずは、一つの業務から。<br /><span class="g">無料相談から。</span></h2>
     <p class="sub reveal d2">初回相談・お見積りは無料です。NDAにも対応します。</p>
-    <form class="form reveal d2" id="form" novalidate>
-      <div class="field"><label>会社名 <span class="r">*</span></label><input type="text" required /></div>
-      <div class="field"><label>お名前 <span class="r">*</span></label><input type="text" required /></div>
-      <div class="field"><label>メールアドレス <span class="r">*</span></label><input type="email" required /></div>
-      <div class="field"><label>ご相談内容</label><textarea></textarea></div>
-      <div class="sr"><button class="btn lg solid" type="submit">送信する →</button></div>
-      <p class="fn">※このフォームはデザインデモです。送信内容は保存されません。</p>
+    <form class="form reveal d2" id="form" action="https://formspree.io/f/xojgbvwn" method="POST">
+      <div class="field"><label for="f-company">会社名 <span class="r">*</span></label>
+        <input id="f-company" name="会社名" type="text" autocomplete="organization" required /></div>
+      <div class="field"><label for="f-name">お名前 <span class="r">*</span></label>
+        <input id="f-name" name="お名前" type="text" autocomplete="name" required /></div>
+      <div class="field"><label for="f-email">メールアドレス <span class="r">*</span></label>
+        <input id="f-email" name="email" type="email" autocomplete="email" required /></div>
+      <div class="field"><label for="f-msg">ご相談内容</label>
+        <textarea id="f-msg" name="ご相談内容"></textarea></div>
+      <input type="hidden" name="_subject" value="【INQTEL JAPAN】サイトから無料相談のお申し込み" />
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <div class="sr"><button class="btn lg solid" type="submit" id="submitBtn">送信する →</button></div>
+      <p class="fn">※お預かりした情報は、ご相談への対応のみに使用いたします。</p>
       <p class="ok" id="ok">送信ありがとうございます。担当者よりご連絡いたします。</p>
+      <p class="ng" id="ng">送信に失敗しました。お手数ですが時間をおいて再度お試しください。</p>
     </form>
   </div>
 </section>
@@ -764,9 +776,30 @@ h1,h2,h3{font-weight:700;letter-spacing:-.015em;line-height:1.12}
     if(reduce)ticker.classList.add("stopped");
   }
 
-  /* form demo */
-  var form=document.getElementById("form"),ok=document.getElementById("ok");
-  form&&form.addEventListener("submit",function(e){e.preventDefault();ok.classList.add("show");form.reset();});
+  /* contact form — posts to Formspree without leaving the page */
+  var form=document.getElementById("form"),ok=document.getElementById("ok"),
+      ng=document.getElementById("ng"),btn=document.getElementById("submitBtn");
+  if(form){
+    form.addEventListener("submit",function(e){
+      e.preventDefault();
+      if(!form.checkValidity()){form.reportValidity();return;}
+      ok.classList.remove("show");ng.classList.remove("show");
+      var label=btn.textContent;
+      btn.disabled=true;btn.textContent="送信中…";
+      fetch(form.action,{
+        method:"POST",
+        body:new FormData(form),
+        headers:{"Accept":"application/json"}
+      }).then(function(res){
+        if(res.ok){ok.classList.add("show");form.reset();}
+        else{return res.json().then(function(){throw new Error("rejected");});}
+      }).catch(function(){
+        ng.classList.add("show");
+      }).then(function(){
+        btn.disabled=false;btn.textContent=label;
+      });
+    });
+  }
 })();
 </script>
 </body>
